@@ -13,10 +13,6 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '^1.16'
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
       - run: go run cmd/scrape-authref/scrape.go
       - id: commit
         continue-on-error: true
@@ -29,11 +25,7 @@ jobs:
       - id: push
         if: ${{ steps.commit.outcome == 'success' }}
         run: |
-          npm --no-git-tag-version version patch
           git add package.json
           git commit --amend --no-edit
           git push
-          npm publish
           echo "::set-output name=changed::yes"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
